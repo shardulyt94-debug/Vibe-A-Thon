@@ -1,4 +1,4 @@
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from enum import Enum
 
 
@@ -13,6 +13,7 @@ class PortionStatus(str, Enum):
     DELIVERED = "DELIVERED"
     CANCELLED = "CANCELLED"
     EXPIRED = "EXPIRED"
+    WASTED = "WASTED"
 
 
 @dataclass
@@ -62,6 +63,7 @@ class Rider:
     capacity: int
     frozen: bool = False
     last_ping: float = 0.0
+    unresponsive: bool = False
 
 
 @dataclass
@@ -76,6 +78,7 @@ class Portion:
     claim_expires_at: float
     traffic_msgs: int = 0
     warned: bool = False
+    at_risk: bool = False
     checkpoint_time: float = 0.0
     checkpoint_dist: float = 0.0
 
