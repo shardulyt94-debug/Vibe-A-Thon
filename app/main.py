@@ -3,7 +3,12 @@ from dataclasses import asdict
 from fastapi import FastAPI
 from pydantic import BaseModel
 
-from .engine import advance_clock, claim, list_cards_for_rider
+from .engine import (
+    advance_clock,
+    cancel_portion,
+    claim,
+    list_cards_for_rider,
+)
 from .seed import seed_demo
 from .store import Store
 
@@ -81,3 +86,7 @@ def advance_simulation(request: AdvanceRequest) -> dict:
     except ValueError as error:
         return {"ok": False, "message": str(error)}
     return {"ok": True, "clock_minutes": now}
+
+@app.post("/portions/{portion_id}/cancel")
+def cancel_claim(portion_id: str) -> dict:
+    return cancel_portion(store, portion_id)

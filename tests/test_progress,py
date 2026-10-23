@@ -1,0 +1,24 @@
+from app.engine import advance_clock, claim
+from app.seed import seed_demo
+from app.store import Store
+
+
+def test_frozen_rider_gets_no_progress_warning():
+    store = seed_demo(Store())
+    result = claim(store, "rider-1", "need-a-meals", "batch-meals")
+    store.riders["rider-1"].frozen = True
+
+    advance_clock(store, 5)
+
+    portion = store.portions[result["portion_id"]]
+    assert portion.warned is True
+    assert any("progress nahi kar raha" in event.text for event in store.events)
+
+
+def test_progressing_rider_does_not_get_warning():
+    store = seed_demo(Store())
+    claim(store, "rider-1", "need-a-meals", "batch-meals")
+
+    advance_clock(store, 5)
+
+    assert not any("progress nahi kar raha" in event.text for event in store.events)
