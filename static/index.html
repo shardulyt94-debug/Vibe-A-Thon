@@ -5,302 +5,689 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Last-Mile Emergency Dispatch</title>
 
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
+
   <style>
     * { box-sizing: border-box; }
 
     :root {
-      --bg: #10141c;
-      --panel: #171d28;
-      --border: #2c3545;
-      --text: #f5f7fb;
-      --muted: #9da7b5;
-      --green: #7ee787;
-      --blue: #79c0ff;
-      --amber: #ffcc66;
-      --red: #ff7b72;
+      --bg: #0a0e17;
+      --bg-2: #0f1522;
+      --panel: rgba(22, 29, 43, 0.72);
+      --panel-solid: #161d2b;
+      --tile: rgba(255, 255, 255, 0.025);
+      --tile-hover: rgba(255, 255, 255, 0.045);
+      --border: rgba(148, 163, 184, 0.12);
+      --border-strong: rgba(148, 163, 184, 0.22);
+      --text: #eef2f8;
+      --muted: #8b97ab;
+      --dim: #5d6a80;
+
+      --green: #4ade80;
+      --blue: #60a5fa;
+      --amber: #fbbf24;
+      --red: #f87171;
+      --violet: #a78bfa;
+
+      --radius: 16px;
+      --radius-sm: 10px;
+      --shadow: 0 1px 0 rgba(255,255,255,0.04) inset, 0 10px 30px -12px rgba(0,0,0,0.6);
+      --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
     }
+
+    html { scrollbar-color: #2a3446 transparent; }
 
     body {
       margin: 0;
-      font-family: system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
-      background: var(--bg);
+      font-family: "Inter", system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+      background:
+        radial-gradient(1200px 600px at 10% -10%, rgba(96,165,250,0.10), transparent 60%),
+        radial-gradient(900px 500px at 100% 0%, rgba(167,139,250,0.08), transparent 60%),
+        radial-gradient(800px 500px at 50% 110%, rgba(74,222,128,0.05), transparent 60%),
+        var(--bg);
+      background-attachment: fixed;
       color: var(--text);
-      line-height: 1.45;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
     }
 
+    h1, h2, h3, p { margin-top: 0; }
+
+    /* ---------- Header ---------- */
     header {
       position: sticky;
       top: 0;
       z-index: 10;
-      padding: 16px 30px;
-      background: var(--panel);
+      padding: 14px 32px;
+      background: rgba(10, 14, 23, 0.7);
+      backdrop-filter: blur(14px) saturate(140%);
+      -webkit-backdrop-filter: blur(14px) saturate(140%);
       border-bottom: 1px solid var(--border);
       display: flex;
       justify-content: space-between;
       align-items: center;
-      gap: 12px;
-    }
-
-    h1, h2, h3, p { margin-top: 0; }
-    header h1 { margin: 0; font-size: 22px; }
-
-    h2 {
-      font-size: 16px;
-      margin-bottom: 12px;
-      color: #c9d1d9;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-    }
-
-    .section-head {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 12px;
-    }
-
-    .section-head h2 { margin-bottom: 0; }
-
-    select {
-      background: #263244;
-      color: var(--text);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 4px 8px;
-      font-size: 13px;
-      font-weight: bold;
-    }
-
-    .header-right {
-      display: flex;
-      align-items: center;
       gap: 16px;
-      flex-wrap: wrap;
     }
 
-    .clock { color: var(--green); font-weight: bold; }
+    .brand { display: flex; align-items: center; gap: 14px; }
+
+    .brand-mark {
+      width: 40px; height: 40px;
+      border-radius: 12px;
+      display: grid; place-items: center;
+      background: linear-gradient(135deg, #ef4444, #f97316);
+      box-shadow: 0 6px 20px -6px rgba(239, 68, 68, 0.6);
+      flex-shrink: 0;
+    }
+    .brand-mark svg { width: 22px; height: 22px; color: white; }
+
+    header h1 {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+    .brand-sub { font-size: 12px; color: var(--muted); margin-top: 1px; }
+
+    .header-right { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+
+    .clock {
+      display: flex; align-items: center; gap: 8px;
+      padding: 7px 14px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      font-size: 13px;
+      color: var(--muted);
+    }
+    .clock svg { width: 15px; height: 15px; color: var(--blue); }
+    .clock-value {
+      font-family: var(--mono);
+      font-weight: 700;
+      color: var(--text);
+      font-variant-numeric: tabular-nums;
+    }
 
     .conn {
+      display: inline-flex; align-items: center; gap: 8px;
       font-size: 12px;
-      font-weight: bold;
-      padding: 4px 10px;
+      font-weight: 600;
+      padding: 7px 14px;
       border-radius: 999px;
-      background: #1f3a2a;
+      background: rgba(74, 222, 128, 0.1);
+      border: 1px solid rgba(74, 222, 128, 0.25);
       color: var(--green);
+      letter-spacing: 0.02em;
+    }
+    .conn .dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: currentColor;
+      box-shadow: 0 0 0 0 currentColor;
+      animation: pulse 1.8s infinite;
+    }
+    .conn.offline {
+      background: rgba(248, 113, 113, 0.1);
+      border-color: rgba(248, 113, 113, 0.3);
+      color: var(--red);
+    }
+    .conn.offline .dot { animation: none; }
+
+    @keyframes pulse {
+      0%   { box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.6); }
+      70%  { box-shadow: 0 0 0 8px rgba(74, 222, 128, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(74, 222, 128, 0); }
     }
 
-    .conn.offline { background: #3d1f1f; color: var(--red); }
+    /* ---------- Layout ---------- */
+    main { padding: 28px 32px 48px; max-width: 1440px; margin: auto; }
 
-    main {
-      padding: 24px 30px;
-      max-width: 1400px;
-      margin: auto;
-    }
-
-    .metrics, .grid { display: grid; gap: 16px; }
-
-    .metrics {
-      grid-template-columns: repeat(4, 1fr);
-      margin-bottom: 24px;
-    }
-
+    .metrics, .grid { display: grid; gap: 18px; }
+    .metrics { grid-template-columns: repeat(4, 1fr); margin-bottom: 18px; }
     .grid { grid-template-columns: repeat(2, 1fr); }
 
     .card {
       background: var(--panel);
+      backdrop-filter: blur(8px);
       border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 18px;
+      border-radius: var(--radius);
+      padding: 20px;
       min-width: 0;
+      box-shadow: var(--shadow);
     }
-
     .full-width { grid-column: 1 / -1; }
 
+    /* ---------- Metrics ---------- */
+    .metric {
+      position: relative;
+      overflow: hidden;
+      --accent: var(--blue);
+      transition: transform 0.2s, border-color 0.2s;
+    }
+    .metric:hover { transform: translateY(-2px); border-color: var(--border-strong); }
+    .metric::before {
+      content: "";
+      position: absolute; inset: 0 0 auto 0; height: 3px;
+      background: linear-gradient(90deg, var(--accent), transparent);
+    }
+    .metric::after {
+      content: "";
+      position: absolute; right: -40px; top: -40px;
+      width: 140px; height: 140px; border-radius: 50%;
+      background: radial-gradient(circle, color-mix(in srgb, var(--accent) 18%, transparent), transparent 70%);
+      pointer-events: none;
+    }
+    .metric.delivered { --accent: var(--green); }
+    .metric.transit   { --accent: var(--blue); }
+    .metric.risk      { --accent: var(--amber); }
+    .metric.wasted    { --accent: var(--red); }
+
+    .metric-top {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 14px;
+    }
+    .metric-label {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .metric-icon {
+      width: 34px; height: 34px; border-radius: 10px;
+      display: grid; place-items: center;
+      color: var(--accent);
+      background: color-mix(in srgb, var(--accent) 12%, transparent);
+      border: 1px solid color-mix(in srgb, var(--accent) 25%, transparent);
+    }
+    .metric-icon svg { width: 18px; height: 18px; }
+
     .metric-value {
-      font-size: 30px;
-      font-weight: bold;
-      color: var(--blue);
+      font-family: var(--mono);
+      font-size: 34px;
+      font-weight: 700;
+      line-height: 1;
+      color: var(--accent);
       font-variant-numeric: tabular-nums;
+      letter-spacing: -0.02em;
+    }
+    .metric-unit {
+      font-family: "Inter", sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--muted);
+      letter-spacing: 0;
+      margin-left: 6px;
+    }
+    .metric-foot { margin-top: 8px; font-size: 12px; color: var(--dim); }
+
+    /* ---------- Controls ---------- */
+    .controls {
+      margin-bottom: 18px;
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 16px; flex-wrap: wrap;
+      padding: 14px 20px;
+    }
+    .controls-left { display: flex; align-items: center; gap: 12px; }
+    .controls-title { font-weight: 600; font-size: 14px; }
+    .controls-hint { font-size: 12px; color: var(--muted); }
+    .controls-right { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+
+    .segmented {
+      display: inline-flex;
+      padding: 4px;
+      gap: 4px;
+      background: rgba(0,0,0,0.25);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+    }
+    .segmented button { margin: 0; }
+
+    /* ---------- Panel headers ---------- */
+    .panel-head {
+      display: flex; justify-content: space-between; align-items: center;
+      gap: 10px; margin-bottom: 16px;
+    }
+    .panel-title { display: flex; align-items: center; gap: 10px; }
+    .panel-title .ico {
+      width: 30px; height: 30px; border-radius: 9px;
+      display: grid; place-items: center;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border);
+      color: var(--muted);
+    }
+    .panel-title .ico svg { width: 16px; height: 16px; }
+
+    h2 {
+      font-size: 14px;
+      margin: 0;
+      font-weight: 600;
+      color: var(--text);
+      letter-spacing: 0.01em;
     }
 
-    .metric-value.delivered { color: var(--green); }
-    .metric-value.risk { color: var(--amber); }
-    .metric-value.wasted { color: var(--red); }
+    .count {
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.06);
+      color: var(--muted);
+    }
 
-    .metric-label { color: var(--muted); font-size: 13px; }
+    select {
+      appearance: none;
+      -webkit-appearance: none;
+      background:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='none' stroke='%238b97ab' stroke-width='2' viewBox='0 0 24 24'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") no-repeat right 10px center,
+        rgba(255,255,255,0.04);
+      color: var(--text);
+      border: 1px solid var(--border-strong);
+      border-radius: 9px;
+      padding: 7px 32px 7px 12px;
+      font: inherit;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: border-color 0.15s;
+    }
+    select:hover, select:focus { border-color: var(--blue); outline: none; }
+    select option { background: var(--panel-solid); }
+
+    /* ---------- List tiles ---------- */
+    .list { display: flex; flex-direction: column; gap: 10px; max-height: 520px; overflow-y: auto; padding-right: 2px; }
 
     .item {
-      border-top: 1px solid var(--border);
-      padding: 12px 0;
+      background: var(--tile);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px 16px;
+      transition: background 0.15s, border-color 0.15s;
     }
-
-    .item:first-child { border-top: 0; padding-top: 0; }
+    .item:hover { background: var(--tile-hover); border-color: var(--border-strong); }
 
     .item-head {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 6px;
+      display: flex; justify-content: space-between; align-items: center;
+      gap: 10px; margin-bottom: 8px;
     }
+    .item-title { font-weight: 600; font-size: 15px; }
 
-    .sub { color: var(--muted); font-size: 14px; }
+    .sub { color: var(--muted); font-size: 13px; }
+    .sub strong { color: var(--text); }
+    .mono { font-family: var(--mono); font-variant-numeric: tabular-nums; }
 
+    .meta-row { display: flex; flex-wrap: wrap; gap: 6px 16px; margin-bottom: 4px; }
+
+    /* Status pills */
     .status {
-      display: inline-block;
-      padding: 3px 8px;
-      border-radius: 6px;
-      font-size: 11px;
-      font-weight: bold;
-      letter-spacing: 0.03em;
-      background: #263244;
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 3px 9px;
+      border-radius: 999px;
+      font-size: 10.5px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      background: rgba(255,255,255,0.06);
+      color: var(--muted);
       white-space: nowrap;
+      border: 1px solid transparent;
     }
+    .status::before {
+      content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor;
+    }
+    .status.open    { color: var(--green); background: rgba(74,222,128,0.1);  border-color: rgba(74,222,128,0.2); }
+    .status.warning { color: var(--amber); background: rgba(251,191,36,0.1);  border-color: rgba(251,191,36,0.2); }
+    .status.danger  { color: var(--red);   background: rgba(248,113,113,0.1); border-color: rgba(248,113,113,0.22); }
+    .status.info    { color: var(--blue);  background: rgba(96,165,250,0.1);  border-color: rgba(96,165,250,0.2); }
 
-    .status.open    { color: var(--green); background: rgba(126, 231, 135, 0.12); }
-    .status.warning { color: var(--amber); background: rgba(255, 204, 102, 0.12); }
-    .status.danger  { color: var(--red);   background: rgba(255, 123, 114, 0.12); }
-    .status.info    { color: var(--blue);  background: rgba(121, 192, 255, 0.12); }
+    /* Utility chips */
+    .chips { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
+    .chip {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-size: 12px; font-weight: 500;
+      padding: 3px 10px; border-radius: 8px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.03);
+    }
+    .chip.on  { color: var(--green); border-color: rgba(74,222,128,0.22); }
+    .chip.off { color: var(--red); border-color: rgba(248,113,113,0.22); text-decoration: line-through; text-decoration-color: rgba(248,113,113,0.5); }
 
-    .actions { margin-top: 8px; }
+    /* Needs + progress */
+    .need { margin-top: 10px; }
+    .need-row { display: flex; justify-content: space-between; gap: 8px; font-size: 13px; margin-bottom: 6px; }
+    .need-type { font-weight: 600; }
+    .need-qty { color: var(--muted); }
+    .need-qty strong { color: var(--text); font-family: var(--mono); }
+
+    .bar {
+      height: 6px; border-radius: 999px;
+      background: rgba(255,255,255,0.06);
+      overflow: hidden;
+    }
+    .bar > span {
+      display: block; height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #3b82f6, var(--blue));
+      transition: width 0.5s ease;
+    }
+    .bar.open > span    { background: linear-gradient(90deg, #22c55e, var(--green)); }
+    .bar.warning > span { background: linear-gradient(90deg, #f59e0b, var(--amber)); }
+    .bar.danger > span  { background: linear-gradient(90deg, #ef4444, var(--red)); }
+
+    /* Riders */
+    .rider-id { display: flex; align-items: center; gap: 12px; }
+    .avatar {
+      width: 36px; height: 36px; border-radius: 50%;
+      display: grid; place-items: center;
+      font-size: 13px; font-weight: 700;
+      color: white;
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      box-shadow: 0 0 0 2px rgba(255,255,255,0.06);
+      flex-shrink: 0;
+    }
+    .delivery {
+      margin-top: 10px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      background: rgba(96,165,250,0.06);
+      border: 1px dashed rgba(96,165,250,0.25);
+      font-size: 13px;
+      color: var(--muted);
+    }
+    .delivery.none { background: transparent; border-color: var(--border); font-style: italic; color: var(--dim); }
+    .delivery-top { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 6px; }
+    .delivery strong { color: var(--text); }
+
+    /* ---------- Buttons ---------- */
+    .actions { margin-top: 12px; display: flex; flex-wrap: wrap; gap: 6px; }
 
     button {
-      border: 0;
-      border-radius: 7px;
-      padding: 8px 12px;
-      margin: 4px 4px 0 0;
+      display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+      border: 1px solid transparent;
+      border-radius: 9px;
+      padding: 8px 14px;
       cursor: pointer;
-      background: #238636;
+      background: linear-gradient(180deg, #22c55e, #16a34a);
       color: white;
-      font-weight: bold;
+      font: inherit;
+      font-weight: 600;
       font-size: 13px;
-      transition: filter 0.15s, opacity 0.15s;
+      box-shadow: 0 1px 0 rgba(255,255,255,0.15) inset, 0 4px 12px -4px rgba(34,197,94,0.5);
+      transition: transform 0.12s, filter 0.15s, opacity 0.15s, background 0.15s, border-color 0.15s;
     }
-
-    button:hover:not(:disabled) { filter: brightness(1.15); }
+    button:hover:not(:disabled) { filter: brightness(1.1); transform: translateY(-1px); }
+    button:active:not(:disabled) { transform: translateY(0); }
     button:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
     button:disabled { opacity: 0.45; cursor: not-allowed; }
 
-    button.secondary { background: #30363d; }
-    button.danger-button { background: #da3633; }
+    button.secondary {
+      background: rgba(255,255,255,0.05);
+      border-color: var(--border-strong);
+      color: var(--text);
+      box-shadow: none;
+    }
+    button.secondary:hover:not(:disabled) { background: rgba(255,255,255,0.09); filter: none; }
 
-    .controls { margin-bottom: 24px; }
+    button.danger-button {
+      background: rgba(248,113,113,0.12);
+      border-color: rgba(248,113,113,0.3);
+      color: #fca5a5;
+      box-shadow: none;
+    }
+    button.danger-button:hover:not(:disabled) { background: rgba(248,113,113,0.2); filter: none; }
 
-    #events {
-      max-height: 260px;
-      overflow-y: auto;
+    button.info-button {
+      background: linear-gradient(180deg, #3b82f6, #2563eb);
+      box-shadow: 0 1px 0 rgba(255,255,255,0.15) inset, 0 4px 12px -4px rgba(59,130,246,0.5);
     }
 
-    .empty { color: #8b949e; font-style: italic; }
+    button.seg {
+      background: transparent;
+      color: var(--muted);
+      box-shadow: none;
+      font-family: var(--mono);
+      padding: 6px 14px;
+    }
+    button.seg:hover:not(:disabled) { background: rgba(96,165,250,0.12); color: var(--blue); filter: none; }
 
-    /* Toasts */
+    button.sm { padding: 6px 11px; font-size: 12px; border-radius: 8px; }
+
+    /* ---------- Events timeline ---------- */
+    #events { max-height: 300px; overflow-y: auto; padding-right: 4px; }
+
+    .event {
+      display: grid;
+      grid-template-columns: 80px 18px 1fr;
+      align-items: start;
+      gap: 10px;
+      padding: 8px 0;
+      font-size: 13.5px;
+    }
+    .event-time {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--blue);
+      text-align: right;
+      padding-top: 1px;
+    }
+    .event-dot {
+      position: relative; height: 100%;
+      display: flex; justify-content: center;
+    }
+    .event-dot::before {
+      content: ""; width: 9px; height: 9px; margin-top: 5px;
+      border-radius: 50%;
+      background: var(--panel-solid);
+      border: 2px solid var(--blue);
+      position: relative; z-index: 1;
+    }
+    .event-dot::after {
+      content: ""; position: absolute; top: 14px; bottom: -18px; width: 1px;
+      background: var(--border-strong);
+    }
+    .event:last-child .event-dot::after { display: none; }
+    .event:first-child .event-dot::before { background: var(--blue); box-shadow: 0 0 0 4px rgba(96,165,250,0.15); }
+    .event-text { color: #cfd6e2; }
+
+    .empty {
+      color: var(--dim);
+      font-size: 13px;
+      text-align: center;
+      padding: 18px 10px;
+      border: 1px dashed var(--border);
+      border-radius: 12px;
+    }
+    .need .empty, .inline-empty { border: 0; padding: 6px 0 0; text-align: left; font-style: italic; }
+
+    /* Scrollbars */
+    .list::-webkit-scrollbar, #events::-webkit-scrollbar { width: 6px; }
+    .list::-webkit-scrollbar-thumb, #events::-webkit-scrollbar-thumb { background: #2a3446; border-radius: 999px; }
+
+    /* ---------- Toasts ---------- */
     #toasts {
-      position: fixed;
-      right: 20px;
-      bottom: 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
+      position: fixed; right: 20px; bottom: 20px;
+      display: flex; flex-direction: column; gap: 10px;
       z-index: 100;
-      max-width: min(360px, calc(100vw - 40px));
+      max-width: min(380px, calc(100vw - 40px));
     }
-
     .toast {
-      padding: 12px 14px;
-      border-radius: 8px;
-      background: #1f2937;
-      border-left: 4px solid var(--green);
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
-      font-size: 14px;
-      animation: slide-in 0.2s ease-out;
+      display: flex; align-items: flex-start; gap: 10px;
+      padding: 12px 16px;
+      border-radius: 12px;
+      background: rgba(22, 29, 43, 0.92);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(74,222,128,0.3);
+      box-shadow: 0 12px 30px -8px rgba(0,0,0,0.6);
+      font-size: 13.5px;
+      animation: slide-in 0.25s cubic-bezier(.2,.9,.3,1.2);
     }
-
-    .toast.error { border-left-color: var(--red); }
-
-    @keyframes slide-in {
-      from { transform: translateY(10px); opacity: 0; }
-      to   { transform: translateY(0); opacity: 1; }
+    .toast-icon {
+      width: 20px; height: 20px; border-radius: 50%; flex-shrink: 0;
+      display: grid; place-items: center;
+      font-size: 12px; font-weight: 800;
+      background: rgba(74,222,128,0.15); color: var(--green);
     }
+    .toast.error { border-color: rgba(248,113,113,0.35); }
+    .toast.error .toast-icon { background: rgba(248,113,113,0.15); color: var(--red); }
+    .toast.leaving { animation: slide-out 0.25s ease-in forwards; }
 
-    @media (max-width: 900px) {
+    @keyframes slide-in  { from { transform: translateY(12px) scale(0.97); opacity: 0; } to { transform: none; opacity: 1; } }
+    @keyframes slide-out { to { transform: translateX(20px); opacity: 0; } }
+
+    /* ---------- Responsive ---------- */
+    @media (max-width: 1000px) {
       .metrics { grid-template-columns: repeat(2, 1fr); }
       .grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 700px) {
       header { align-items: flex-start; flex-direction: column; }
       main, header { padding-left: 16px; padding-right: 16px; }
+      .controls { flex-direction: column; align-items: stretch; }
+      .event { grid-template-columns: 64px 18px 1fr; }
     }
-
     @media (max-width: 480px) {
       .metrics { grid-template-columns: 1fr; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; transition: none !important; }
     }
   </style>
 </head>
 
 <body>
   <header>
-    <h1>Last-Mile Emergency Dispatch</h1>
+    <div class="brand">
+      <div class="brand-mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v6M12 16v6M2 12h6M16 12h6"/><circle cx="12" cy="12" r="3"/></svg>
+      </div>
+      <div>
+        <h1>Last-Mile Emergency Dispatch</h1>
+        <div class="brand-sub">Relief logistics command center</div>
+      </div>
+    </div>
     <div class="header-right">
-      <div class="clock">Simulation clock: <span id="clock">0.0</span> min</div>
-      <span id="conn" class="conn">● Live</span>
+      <div class="clock">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+        Sim clock <span class="clock-value"><span id="clock">0.0</span> min</span>
+      </div>
+      <span id="conn" class="conn"><span class="dot"></span>Live</span>
     </div>
   </header>
 
   <main>
     <section class="metrics">
-      <div class="card">
-        <div class="metric-value delivered" id="delivered">0</div>
-        <div class="metric-label">Delivered (Portions / Items)</div>
+      <div class="card metric delivered">
+        <div class="metric-top">
+          <span class="metric-label">Delivered</span>
+          <span class="metric-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>
+        </div>
+        <div class="metric-value" id="delivered">0</div>
+        <div class="metric-foot">Portions / items</div>
       </div>
-      <div class="card">
+      <div class="card metric transit">
+        <div class="metric-top">
+          <span class="metric-label">In Transit</span>
+          <span class="metric-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h11v9H3zM14 10h4l3 3v3h-7"/><circle cx="7" cy="18" r="1.8"/><circle cx="17" cy="18" r="1.8"/></svg></span>
+        </div>
         <div class="metric-value" id="transit">0</div>
-        <div class="metric-label">In Transit (Portions / Items)</div>
+        <div class="metric-foot">Portions / items</div>
       </div>
-      <div class="card">
-        <div class="metric-value risk" id="risk">0</div>
-        <div class="metric-label">At Risk</div>
+      <div class="card metric risk">
+        <div class="metric-top">
+          <span class="metric-label">At Risk</span>
+          <span class="metric-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 2 21h20L12 3z"/><path d="M12 10v4M12 17.5v.01"/></svg></span>
+        </div>
+        <div class="metric-value" id="risk">0</div>
+        <div class="metric-foot">Claimed or in transit</div>
       </div>
-      <div class="card">
-        <div class="metric-value wasted" id="wasted">0</div>
-        <div class="metric-label">Expired / Wasted</div>
+      <div class="card metric wasted">
+        <div class="metric-top">
+          <span class="metric-label">Expired / Wasted</span>
+          <span class="metric-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg></span>
+        </div>
+        <div class="metric-value" id="wasted">0</div>
+        <div class="metric-foot">Portions / items</div>
       </div>
     </section>
 
     <section class="card controls">
-      <h2>Simulation Controls</h2>
-      <button data-action="advance" data-minutes="1">+1 min</button>
-      <button data-action="advance" data-minutes="5">+5 min</button>
-      <button data-action="advance" data-minutes="10">+10 min</button>
-      <button class="secondary" data-action="reset">Reset Demo</button>
+      <div class="controls-left">
+        <div class="panel-title">
+          <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4l14 8-14 8V4z"/></svg></span>
+        </div>
+        <div>
+          <div class="controls-title">Simulation Controls</div>
+          <div class="controls-hint">Advance time to trigger expiries and reroutes</div>
+        </div>
+      </div>
+      <div class="controls-right">
+        <div class="segmented" role="group" aria-label="Advance time">
+          <button class="seg" data-action="advance" data-minutes="1">+1 min</button>
+          <button class="seg" data-action="advance" data-minutes="5">+5 min</button>
+          <button class="seg" data-action="advance" data-minutes="10">+10 min</button>
+        </div>
+        <button class="secondary" data-action="reset">↺ Reset Demo</button>
+      </div>
     </section>
 
     <section class="grid">
       <div class="card">
-        <h2>Shelters</h2>
-        <div id="shelters"><div class="empty">Loading…</div></div>
+        <div class="panel-head">
+          <div class="panel-title">
+            <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11 12 4l9 7v9H3z"/><path d="M9 20v-6h6v6"/></svg></span>
+            <h2>Shelters</h2>
+          </div>
+          <span class="count" id="shelters-count">0</span>
+        </div>
+        <div id="shelters" class="list"><div class="empty">Loading…</div></div>
       </div>
 
       <div class="card">
-        <h2>Batches</h2>
-        <div id="batches"><div class="empty">Loading…</div></div>
+        <div class="panel-head">
+          <div class="panel-title">
+            <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8 12 3 3 8v8l9 5 9-5z"/><path d="M3 8l9 5 9-5M12 13v8"/></svg></span>
+            <h2>Batches</h2>
+          </div>
+          <span class="count" id="batches-count">0</span>
+        </div>
+        <div id="batches" class="list"><div class="empty">Loading…</div></div>
       </div>
 
       <div class="card">
-        <h2>Riders</h2>
-        <div id="riders"><div class="empty">Loading…</div></div>
+        <div class="panel-head">
+          <div class="panel-title">
+            <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg></span>
+            <h2>Riders</h2>
+          </div>
+          <span class="count" id="riders-count">0</span>
+        </div>
+        <div id="riders" class="list"><div class="empty">Loading…</div></div>
       </div>
 
       <div class="card">
-        <div class="section-head">
-          <h2>Claimable Cards</h2>
+        <div class="panel-head">
+          <div class="panel-title">
+            <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18"/></svg></span>
+            <h2>Claimable Cards</h2>
+          </div>
           <select id="rider-select" aria-label="Select Rider">
             <option value="rider-1">Rider 1 (R1)</option>
           </select>
         </div>
-        <div id="cards"><div class="empty">Loading…</div></div>
+        <div id="cards" class="list"><div class="empty">Loading…</div></div>
       </div>
 
       <div class="card full-width">
-        <h2>Event Log</h2>
+        <div class="panel-head">
+          <div class="panel-title">
+            <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h10"/></svg></span>
+            <h2>Event Log</h2>
+          </div>
+          <span class="count" id="events-count">0</span>
+        </div>
         <div id="events"><div class="empty">Loading…</div></div>
       </div>
     </section>
@@ -333,18 +720,33 @@
       return Number.isFinite(n) ? n.toFixed(digits) : "—";
     }
 
+    function initials(name) {
+      return String(name || "?").split(/\s+/).filter(Boolean).slice(0, 2)
+        .map(w => w[0].toUpperCase()).join("");
+    }
+
+    function setCount(id, n) {
+      const el = document.getElementById(id);
+      if (el) el.textContent = n;
+    }
+
     function toast(message, type = "ok") {
       if (!message) return;
       const el = document.createElement("div");
-      el.className = `toast ${type === "error" ? "error" : ""}`;
-      el.textContent = message;
+      const isErr = type === "error";
+      el.className = `toast ${isErr ? "error" : ""}`;
+      el.innerHTML = `<span class="toast-icon">${isErr ? "!" : "✓"}</span><span></span>`;
+      el.lastElementChild.textContent = message;
       document.getElementById("toasts").appendChild(el);
-      setTimeout(() => el.remove(), 3500);
+      setTimeout(() => {
+        el.classList.add("leaving");
+        setTimeout(() => el.remove(), 250);
+      }, 3500);
     }
 
     function setConnection(online, reason = "") {
       const el = document.getElementById("conn");
-      el.textContent = online ? "● Live" : "● Offline";
+      el.innerHTML = `<span class="dot"></span>${online ? "Live" : "Offline"}`;
       el.className = `conn ${online ? "" : "offline"}`;
       el.title = reason;
     }
@@ -438,6 +840,11 @@
 
       document.getElementById("clock").textContent = num(clock);
 
+      setCount("shelters-count", shelters.length);
+      setCount("batches-count", batches.length);
+      setCount("riders-count", riders.length);
+      setCount("events-count", events.length);
+
       // Sync rider selector options
       const riderSelect = document.getElementById("rider-select");
       if (riders.length) {
@@ -455,16 +862,16 @@
       const statSummary = pred => {
         const list = portions.filter(pred);
         const qty = list.reduce((sum, p) => sum + (Number(p.qty) || 0), 0);
-        return `${list.length} (${qty})`;
+        return `${list.length}<span class="metric-unit">/ ${qty} items</span>`;
       };
 
-      document.getElementById("delivered").textContent =
+      document.getElementById("delivered").innerHTML =
         statSummary(p => p.status === "DELIVERED");
-      document.getElementById("transit").textContent =
+      document.getElementById("transit").innerHTML =
         statSummary(p => p.status === "IN_TRANSIT");
-      document.getElementById("risk").textContent =
+      document.getElementById("risk").innerHTML =
         statSummary(p => p.at_risk === true && ["CLAIMED", "IN_TRANSIT"].includes(p.status));
-      document.getElementById("wasted").textContent =
+      document.getElementById("wasted").innerHTML =
         statSummary(p => ["EXPIRED", "WASTED"].includes(p.status));
 
       // Shelters
@@ -476,46 +883,53 @@
             return `
               <div class="item">
                 <div class="item-head">
-                  <strong>${esc(shelter.name)}</strong>
+                  <span class="item-title">${esc(shelter.name)}</span>
                   <span class="status ${isOpen ? "open" : "warning"}">${esc(shelter.status)}</span>
                 </div>
-                <div class="sub">
-                  Water: ${shelter.has_water ? "Yes" : "No"} ·
-                  Fuel: ${shelter.has_fuel ? "Yes" : "No"}
+                <div class="chips">
+                  <span class="chip ${shelter.has_water ? "on" : "off"}">💧 Water</span>
+                  <span class="chip ${shelter.has_fuel ? "on" : "off"}">⛽ Fuel</span>
                 </div>
-                <div>
-                  ${shelterNeeds.length
-                    ? shelterNeeds.map(n => {
-                        const used = portions
-                          .filter(p => p.need_id === n.id && NEED_COUNTED.has(p.status))
-                          .reduce((s, p) => s + p.qty, 0);
-                        const rem = Math.max(0, n.qty - used);
-                        return `${esc(n.item_type)}: <strong>${rem}</strong> / ${esc(n.qty)} needed (by ${num(n.need_by)}m)`;
-                      }).join("<br>")
-                    : `<span class="empty">No open needs</span>`}
-                </div>
+                ${shelterNeeds.length
+                  ? shelterNeeds.map(n => {
+                      const used = portions
+                        .filter(p => p.need_id === n.id && NEED_COUNTED.has(p.status))
+                        .reduce((s, p) => s + p.qty, 0);
+                      const rem = Math.max(0, n.qty - used);
+                      const pct = n.qty ? Math.min(100, (used / n.qty) * 100) : 0;
+                      const barCls = pct >= 100 ? "open" : "";
+                      return `
+                        <div class="need">
+                          <div class="need-row">
+                            <span class="need-type">${esc(n.item_type)}</span>
+                            <span class="need-qty"><strong>${rem}</strong> / ${esc(n.qty)} needed · by <span class="mono">${num(n.need_by)}m</span></span>
+                          </div>
+                          <div class="bar ${barCls}"><span style="width:${pct}%"></span></div>
+                        </div>`;
+                    }).join("")
+                  : `<div class="sub inline-empty">No open needs</div>`}
                 <div class="actions">
                   ${isOpen ? `
-                    <button class="danger-button"
+                    <button class="danger-button sm"
                       data-action="unavailable"
                       data-shelter-id="${esc(shelter.id)}">
                       Temporarily Unavailable
                     </button>
                   ` : `
-                    <button
+                    <button class="sm"
                       data-action="reopen"
                       data-shelter-id="${esc(shelter.id)}">
                       Reopen Shelter
                     </button>
                   `}
-                  <button class="secondary"
+                  <button class="secondary sm"
                     data-action="toggleUtility"
                     data-shelter-id="${esc(shelter.id)}"
                     data-field="has_water"
                     data-val="${!shelter.has_water}">
                     ${shelter.has_water ? "Cut Water" : "Restore Water"}
                   </button>
-                  <button class="secondary"
+                  <button class="secondary sm"
                     data-action="toggleUtility"
                     data-shelter-id="${esc(shelter.id)}"
                     data-field="has_fuel"
@@ -541,15 +955,19 @@
               .filter(p => p.batch_id === batch.id && BATCH_CONSUMED.has(p.status))
               .reduce((s, p) => s + p.qty, 0);
             const remainingQty = remainingTime <= 0 ? 0 : Math.max(0, batch.total_qty - usedQty);
+            const pct = batch.total_qty ? Math.min(100, (remainingQty / batch.total_qty) * 100) : 0;
 
             return `
               <div class="item">
                 <div class="item-head">
-                  <strong>${esc(batch.item_type)}</strong>
+                  <span class="item-title">${esc(batch.item_type)}</span>
                   <span class="status ${cls}">${label}</span>
                 </div>
-                <div class="sub">Remaining qty: <strong>${remainingQty}</strong> / ${esc(batch.total_qty)}</div>
-                <div class="sub">Safe until: ${num(batch.safe_until)} min</div>
+                <div class="need-row">
+                  <span class="sub">Remaining <strong class="mono">${remainingQty}</strong> / ${esc(batch.total_qty)}</span>
+                  <span class="sub">Safe until <span class="mono">${num(batch.safe_until)}m</span></span>
+                </div>
+                <div class="bar ${cls}"><span style="width:${pct}%"></span></div>
               </div>
             `;
           }).join("")
@@ -570,34 +988,43 @@
             return `
               <div class="item">
                 <div class="item-head">
-                  <strong>${esc(rider.name)}</strong>
+                  <div class="rider-id">
+                    <span class="avatar">${esc(initials(rider.name))}</span>
+                    <div>
+                      <div class="item-title">${esc(rider.name)}</div>
+                      <div class="sub mono">📍 ${num(rider.x)}, ${num(rider.y)}</div>
+                    </div>
+                  </div>
                   <span class="status ${badgeClass}">${badgeText}</span>
                 </div>
-                <div class="sub">Location: (${num(rider.x)}, ${num(rider.y)})</div>
-                <div class="sub">
-                  Delivery:
-                  ${portion
-                    ? `<span class="status info">${esc(portion.status)}</span>
-                       ${portion.at_risk ? `<span class="status danger">AT RISK</span>` : ""}
-                       — ${esc(portion.qty)} to <strong>${esc(targetShelter?.name || portion.shelter_id)}</strong>
-                       (msgs: ${esc(portion.traffic_msgs)}/3, lease: ${num(portion.claim_expires_at)}m)`
-                    : "None"}
-                </div>
+                ${portion
+                  ? `<div class="delivery">
+                       <div class="delivery-top">
+                         <span class="status info">${esc(portion.status)}</span>
+                         ${portion.at_risk ? `<span class="status danger">AT RISK</span>` : ""}
+                       </div>
+                       <div><strong>${esc(portion.qty)}</strong> units → <strong>${esc(targetShelter?.name || portion.shelter_id)}</strong></div>
+                       <div class="sub" style="margin-top:2px">
+                         Msgs <span class="mono">${esc(portion.traffic_msgs)}/3</span> ·
+                         Lease until <span class="mono">${num(portion.claim_expires_at)}m</span>
+                       </div>
+                     </div>`
+                  : `<div class="delivery none">No active delivery</div>`}
                 <div class="actions">
-                  <button class="secondary"
+                  <button class="secondary sm"
                     data-action="freeze"
                     data-rider-id="${esc(rider.id)}"
                     data-frozen="${!rider.frozen}">
-                    ${rider.frozen ? "Unfreeze" : "Freeze"}
+                    ${rider.frozen ? "▶ Unfreeze" : "❄ Freeze"}
                   </button>
                   ${portion ? `
-                    <button class="danger-button"
+                    <button class="danger-button sm"
                       data-action="cancel"
                       data-portion-id="${esc(portion.id)}"
                       ${portion.status === "IN_TRANSIT" ? 'title="Cannot cancel after pickup"' : ""}>
                       Cancel
                     </button>
-                    <button
+                    <button class="info-button sm"
                       data-action="message"
                       data-portion-id="${esc(portion.id)}">
                       Traffic Message (${esc(portion.traffic_msgs)}/3)
@@ -614,8 +1041,10 @@
       const scroll = eventsEl.scrollTop;
       eventsEl.innerHTML = events.length
         ? [...events].reverse().map(event => `
-            <div class="item">
-              <strong>${num(event.time)} min</strong> — ${esc(event.text)}
+            <div class="event">
+              <span class="event-time">${num(event.time)} min</span>
+              <span class="event-dot"></span>
+              <span class="event-text">${esc(event.text)}</span>
             </div>
           `).join("")
         : `<div class="empty">No events yet</div>`;
@@ -633,16 +1062,16 @@
       container.innerHTML = cards.map(card => `
         <div class="item">
           <div class="item-head">
-            <strong>${esc(card.shelter_name)}</strong>
+            <span class="item-title">${esc(card.shelter_name)}</span>
             <span class="status info">${esc(card.item_type)}</span>
           </div>
-          <div class="sub">Available: ${esc(card.available_qty)}</div>
+          <div class="sub">Available: <strong class="mono">${esc(card.available_qty)}</strong></div>
           <div class="actions">
-            <button
+            <button class="sm"
               data-action="claim"
               data-need-id="${esc(card.need_id)}"
               data-batch-id="${esc(card.batch_id)}">
-              Claim as ${esc(selectedRiderId)}
+              ✓ Claim as ${esc(selectedRiderId)}
             </button>
           </div>
         </div>
